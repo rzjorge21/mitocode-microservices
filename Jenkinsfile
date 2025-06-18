@@ -16,41 +16,41 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
-            steps {
-                sh 'mvn clean compile -B -ntp'
-            }
-        }
-
-        stage('Testing') {
-            steps {
-                sh 'mvn test -B -ntp'
-            }
-            post {
-                success {
-                    junit 'target/surefire-reports/*.xml'
-                }
-                failure { 
-                    echo 'Tests failed!'
-                }
-            }
-        }
-        // stage('Coverage') {
+        // stage('Build') {
         //     steps {
-        //         sh 'mvn jacoco:report -B -ntp'
+        //         sh 'mvn clean compile -B -ntp'
         //     }
-        //     post { 
-        //         success { 
-        //             recordCoverage(
-        //                 tools: [[parser: 'JACOCO']],
-        //                 sourceCodeRetention: 'EVERY_BUILD',
-        //                 qualityGates: [
-        //                     [threshold: 60.0, metric: 'LINE', criticality: 'FAILURE'],
-        //                 ]
-        //             )
-        //         }
-        //     }  
         // }
+
+        // stage('Testing') {
+        //     steps {
+        //         sh 'mvn test -B -ntp'
+        //     }
+        //     post {
+        //         success {
+        //             junit 'target/surefire-reports/*.xml'
+        //         }
+        //         failure { 
+        //             echo 'Tests failed!'
+        //         }
+        //     }
+        // }
+        stage('Coverage') {
+            steps {
+                sh 'mvn jacoco:report -B -ntp'
+            }
+            post { 
+                success { 
+                    recordCoverage(
+                        tools: [[parser: 'JACOCO']],
+                        sourceCodeRetention: 'EVERY_BUILD',
+                        qualityGates: [
+                            [threshold: 60.0, metric: 'LINE', criticality: 'FAILURE'],
+                        ]
+                    )
+                }
+            }  
+        }
 
         // stage('SonarQube Analysis') {
         //     steps {

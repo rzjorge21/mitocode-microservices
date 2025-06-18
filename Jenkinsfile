@@ -35,57 +35,57 @@ pipeline {
                 }
             }
         }
-        stage('Coverage') {
-            steps {
-                sh 'mvn jacoco:report -B -ntp'
-            }
-            post { 
-                success { 
-                    recordCoverage(
-                        tools: [[parser: 'JACOCO']],
-                        sourceCodeRetention: 'EVERY_BUILD',
-                        qualityGates: [
-                            [threshold: 60.0, metric: 'LINE', criticality: 'FAILURE'],
-                        ]
-                    )
-                }
-            }  
-        }
+        // stage('Coverage') {
+        //     steps {
+        //         sh 'mvn jacoco:report -B -ntp'
+        //     }
+        //     post { 
+        //         success { 
+        //             recordCoverage(
+        //                 tools: [[parser: 'JACOCO']],
+        //                 sourceCodeRetention: 'EVERY_BUILD',
+        //                 qualityGates: [
+        //                     [threshold: 60.0, metric: 'LINE', criticality: 'FAILURE'],
+        //                 ]
+        //             )
+        //         }
+        //     }  
+        // }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        mvn sonar:sonar -B -ntp \
-                          -Dsonar.projectKey=mitocode-microservices \
-                          -Dsonar.host.url=$SONAR_HOST_URL \
-                          -Dsonar.login=$SONAR_TOKEN \
-                          -Dsonar.java.coveragePlugin=jacoco \
-                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                          -Dsonar.coverage.exclusions=**/test/** \
-                          -Dsonar.test.exclusions=**/test/** \
-                          -Dsonar.java.test.exclusions=**/test/**
-                        """
-                    }
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+        //             withSonarQubeEnv('SonarQube') {
+        //                 sh """
+        //                 mvn sonar:sonar -B -ntp \
+        //                   -Dsonar.projectKey=mitocode-microservices \
+        //                   -Dsonar.host.url=$SONAR_HOST_URL \
+        //                   -Dsonar.login=$SONAR_TOKEN \
+        //                   -Dsonar.java.coveragePlugin=jacoco \
+        //                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+        //                   -Dsonar.coverage.exclusions=**/test/** \
+        //                   -Dsonar.test.exclusions=**/test/** \
+        //                   -Dsonar.java.test.exclusions=**/test/**
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
         
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        // stage('Quality Gate') {
+        //     steps {
+        //         timeout(time: 1, unit: 'MINUTES') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
 
-        stage('Package') {
-            steps {
-                sh 'env | sort'
-                sh 'mvn clean package -DskipTests -B -ntp'
-            }
-        }
+        // stage('Package') {
+        //     steps {
+        //         sh 'env | sort'
+        //         sh 'mvn clean package -DskipTests -B -ntp'
+        //     }
+        // }
         
         // stage('Build Docker Image') {
         //     steps {

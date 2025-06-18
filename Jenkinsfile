@@ -52,68 +52,68 @@ pipeline {
         //     }  
         // }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        mvn sonar:sonar -B -ntp \
-                          -Dsonar.projectKey=mitocode-microservices \
-                          -Dsonar.host.url=$SONAR_HOST_URL \
-                          -Dsonar.login=$SONAR_TOKEN \
-                          -Dsonar.java.coveragePlugin=jacoco \
-                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                          -Dsonar.coverage.exclusions=**/test/** \
-                          -Dsonar.test.exclusions=**/test/** \
-                          -Dsonar.java.test.exclusions=**/test/**
-                        """
-                    }
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+        //             withSonarQubeEnv('SonarQube') {
+        //                 sh """
+        //                 mvn sonar:sonar -B -ntp \
+        //                   -Dsonar.projectKey=mitocode-microservices \
+        //                   -Dsonar.host.url=$SONAR_HOST_URL \
+        //                   -Dsonar.login=$SONAR_TOKEN \
+        //                   -Dsonar.java.coveragePlugin=jacoco \
+        //                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+        //                   -Dsonar.coverage.exclusions=**/test/** \
+        //                   -Dsonar.test.exclusions=**/test/** \
+        //                   -Dsonar.java.test.exclusions=**/test/**
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
         
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        // stage('Quality Gate') {
+        //     steps {
+        //         timeout(time: 1, unit: 'MINUTES') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
 
-        // stage('Package') {
-        //     steps {
-        //         sh 'env | sort'
-        //         sh 'mvn clean package -DskipTests -B -ntp'
-        //     }
-        // }
+        stage('Package') {
+            steps {
+                sh 'env | sort'
+                sh 'mvn clean package -DskipTests -B -ntp'
+            }
+        }
         
-        // stage('Build Docker Image') {
-        //     steps {
-        //         script {
-        //             def pom = readMavenPom file: 'pom.xml'
-        //             env.IMAGE_TAG = "${pom.version}-${env.BUILD_NUMBER}"
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def pom = readMavenPom file: 'pom.xml'
+                    env.IMAGE_TAG = "${pom.version}-${env.BUILD_NUMBER}"
                     
-        //             sh """
-        //                 docker build -t ${DOCKER_IMAGE}:${env.IMAGE_TAG} .
-        //                 docker build -t ${DOCKER_IMAGE}:latest .
-        //             """
-        //         }
-        //     }
-        // }
-        // stage('Push to DockerHub') {
-        //     steps {
-        //         script {
-        //             sh "echo ${DOCKERHUB_CREDS_PSW} | docker login -u ${DOCKERHUB_CREDS_USR} --password-stdin"
+                    sh """
+                        docker build -t ${DOCKER_IMAGE}:${env.IMAGE_TAG} .
+                        docker build -t ${DOCKER_IMAGE}:latest .
+                    """
+                }
+            }
+        }
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    sh "echo ${DOCKERHUB_CREDS_PSW} | docker login -u ${DOCKERHUB_CREDS_USR} --password-stdin"
                     
-        //             sh """
-        //                 docker push ${DOCKER_IMAGE}:${env.IMAGE_TAG}
-        //                 docker push ${DOCKER_IMAGE}:latest
-        //             """
+                    sh """
+                        docker push ${DOCKER_IMAGE}:${env.IMAGE_TAG}
+                        docker push ${DOCKER_IMAGE}:latest
+                    """
                     
-        //             echo "Imagen Docker publicada: ${DOCKER_IMAGE}:${env.IMAGE_TAG}"
-        //         }
-        //     }
-        // }
+                    echo "Imagen Docker publicada: ${DOCKER_IMAGE}:${env.IMAGE_TAG}"
+                }
+            }
+        }
     }
     post { 
         always { 

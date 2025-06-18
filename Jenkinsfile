@@ -16,11 +16,11 @@ pipeline {
     }
 
     stages {
-        // stage('Build') {
-        //     steps {
-        //         sh 'mvn clean compile -B -ntp'
-        //     }
-        // }
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile -B -ntp'
+            }
+        }
 
         // stage('Testing') {
         //     steps {

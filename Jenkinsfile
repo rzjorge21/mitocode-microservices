@@ -58,7 +58,7 @@ pipeline {
                     withSonarQubeEnv('SonarQube') {
                         sh """
                         mvn sonar:sonar -B -ntp \
-                          -Dsonar.projectKey=demo-calculator \
+                          -Dsonar.projectKey=mitocode-microservices \
                           -Dsonar.host.url=$SONAR_HOST_URL \
                           -Dsonar.login=$SONAR_TOKEN \
                           -Dsonar.java.coveragePlugin=jacoco \

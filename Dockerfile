@@ -5,7 +5,7 @@ WORKDIR /app
 # 1. Permisos y dependencias
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw &&
+RUN chmod +x mvnw
 RUN ./mvnw dependency:go-offline
 
 # 2. Código fuente

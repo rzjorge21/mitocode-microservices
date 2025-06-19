@@ -1,36 +1,31 @@
-# Fase de construcción
 FROM eclipse-temurin:17-jdk-jammy as builder
+
 WORKDIR /app
 
-# Copiar solo lo necesario para descargar dependencias
-COPY .mvn .mvn
-COPY mvnw .
-COPY pom.xml .
+# 1. Permisos y dependencias
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw && \
+    ./mvnw dependency:go-offline
 
-# Descargar dependencias (cache separada para optimización)
-RUN ./mvnw dependency:go-offline
-
-# Copiar código fuente
+# 2. Código fuente
 COPY src ./src
 
+# 3. Compilación y empaquetado
 RUN ./mvnw clean package -DskipTests
 
-# Fase de ejecución
 FROM eclipse-temurin:17-jre-jammy
+
 WORKDIR /app
 
-# Copiar el JAR desde la fase de construcción
-COPY --from=builder /app/target/*.jar app.jar
-
-# Metadatos
+# Metadata
 LABEL maintainer="rz.jorge21@gmail.com"
 LABEL version="1.0"
 LABEL description="Microservicio Mitocode"
 
 # Configuración
-EXPOSE 8080
 ENV JAVA_OPTS="-Xms256m -Xmx512m"
 USER 1001
+EXPOSE 8080
 
-# Punto de entrada
+COPY --from=builder /app/target/*.jar app.jar
 ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]

@@ -3,7 +3,7 @@
 Este proyecto es una aplicación Spring Boot que implementa un servicio de calculadora básica con operaciones de suma y resta. Fue desarrollado como demostración de un pipeline CI/CD completo que incluye:
 -   Pruebas unitarias con cobertura controlada
 -   Análisis estático de código con SonarQube
--   Gestión de artefactos con JFrog Artifactory
+-   Despliegue de imagen en DockerHub
 -   Automatización con Jenkins
     
 ## Características Técnicas
@@ -24,7 +24,7 @@ Este proyecto es una aplicación Spring Boot que implementa un servicio de calcu
 -   Pruebas unitarias con cobertura >65%
 -   Integración continua con Jenkins
 -   Análisis de calidad de código con SonarQube
--   Publicación automática de artefactos en JFrog Artifactory
+-   Publicación de imagen en Dockerhub bajo el nombre de rzjorge21/mitocode-microservices
     
 
 ## Pipeline CI/CD (Jenkinsfile)
@@ -46,15 +46,17 @@ El pipeline automatizado consta de las siguientes etapas:
 6.  **Package**:
     -   Empaquetado del artefacto final (JAR)
     -   Omisión de pruebas (ya ejecutadas en etapas anteriores)
-7.  **Artifactory**:
-    -   Publicación del artefacto en JFrog Artifactory
-    -   Organización por groupId, artifactId y versión
-    -   Inclusión de metadatos (número de build, nombre del job)
+7.  **Build Docker Image**:
+    -   Construcción de imagen
+8. **Push to DockerHub**:
+    -   Publicación de imagen generada a la cuenta personal
+9. **Post ejecución**:
+    -   Limpieza del workspace
+    -   Logout de DockerHub
 
 ### Configuración Requerida
 
 -   **Variables de entorno**:
     -   `SONAR_HOST_URL`: URL del servidor SonarQube
-    -   `ARTIFACTORY_URL`: URL del servidor Artifactory
-    -   `ARTIFACTORY_REPO`: Nombre del repositorio
-    -   `ARTIFACTORY_CREDS`: Credenciales para Artifactory
+    -   `DOCKERHUB_CREDS`: Credenciales de DockerHub
+    -   `DOCKER_IMAGE`: Nombre de imagen a publicar

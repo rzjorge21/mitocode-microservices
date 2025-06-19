@@ -54,6 +54,18 @@ El pipeline automatizado consta de las siguientes etapas:
     -   Limpieza del workspace
     -   Logout de DockerHub
 
+## Dockerfile
+1. Uso de la imagen oficial de Eclipse Temurin (JDK 17)
+2. Se estable /app como directorio de trabajo dentro del contenedor
+3. Copia de archivos de confiración y otorgamiento de permisos
+4. Descarga de dependencias
+5. Copia de código fuente
+6. Compilación
+7. Uso de una imagen más ligera (Solo JRE) con solo lo necesario para la ejecución de la aplicación
+8. Configuración de metadatos
+9. Configuración de ejecución
+10. Configuración y copia de artefacto
+
 ### Configuración Requerida
 
 -   **Variables de entorno**:
